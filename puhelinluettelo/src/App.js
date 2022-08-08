@@ -11,17 +11,30 @@ const App = () => {
     const nameObject = {
       name: newName
     }
-    setPersons(persons.concat(nameObject))
-    setNewName('')
-    console.log('button clicked', event.target)
+    // check to see if object already exists in array
+    const isFound = persons.some(object => {
+      if (object.name === newName) {
+        return true
+      }
+      return false
+    })
+    // if object found = true
+    // alert
+    if (isFound) {
+      alert(`${newName} is already added to phonebook !`)
+      setNewName('')
+    }
+
+    // if object is not found in array, concat the object to array
+    if (!isFound) {
+      setPersons(persons.concat(nameObject))
+      setNewName('')
+    }
   }
 
   const handleNameChange = (event) => {
-    console.log(event.target.value)
     setNewName(event.target.value)
-  }
-
-
+    }
 
   return (
     <div>
