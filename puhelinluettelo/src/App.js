@@ -3,10 +3,31 @@ import { useState } from 'react'
 const App = () => {
   const [persons, setPersons] = useState([
     { name: 'Arto Hellas',
-      number: '040-1231244'}
+      number: '040-1231244'
+  },{
+    name: 'Salla Vuorinen',
+    number: '040-8973456'
+  },{
+    name: 'Pekka Haavisto',
+    number: '040-1920437'
+  },{
+    name: 'Makke Mikkelinen',
+    number: '040-9385647'
+  },{
+    name: 'Susse Kievinen',
+    number: '040-3376547'
+  },{
+    name: 'Blum Blumberg',
+    number: '040-9387694'
+  },{
+    name: 'Nikjel Nikjelson',
+    number: '040-2298375'
+  }
   ]) 
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
+  const [filter, setFilter] = useState('')
+
 
   const addPerson = (event) => {
     event.preventDefault()
@@ -36,17 +57,31 @@ const App = () => {
       setNewNumber('')
     }
   }
+    // Filter phonebook by a string
+  const query = persons.filter(name => name.name.toLowerCase().includes(filter))
 
+  // handleChanges
   const handleNameChange = (event) => {
     setNewName(event.target.value)
     }
   const handleNumberChange = (event) => {
       setNewNumber(event.target.value)
       }
+  const handleFilterChange = (event) => {
+      setFilter(event.target.value)
+  }
 
   return (
     <>
       <h2>Phonebook</h2>
+        <div> filter shown with
+          <input
+            value={filter}
+            onChange={handleFilterChange}>
+          </input>
+        </div>
+
+      <h2>add a new</h2>
       <form onSubmit={addPerson}>
         <div>
           name: <input 
@@ -61,9 +96,11 @@ const App = () => {
         <div>
           <button type="submit">add</button>
         </div>
+
       </form>
+
       <h2>Numbers</h2>
-      {persons.map((persons) => {
+      {query.map((persons) => {
         return (
           <div key={persons.name}>
             <p>{persons.name} {persons.number}</p>
@@ -72,7 +109,6 @@ const App = () => {
       })}
     </>
   )
-
 }
 
 export default App
