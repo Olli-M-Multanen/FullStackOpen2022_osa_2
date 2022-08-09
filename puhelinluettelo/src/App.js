@@ -1,5 +1,59 @@
 import { useState } from 'react'
 
+
+const Filter = ({ filter , handleFilterChange }) => {
+  return (
+    <>
+    <div>filter shown with
+      <input
+        value={filter}
+        onChange={handleFilterChange}>
+      </input>
+    </div>
+    </>
+  )
+}
+
+const PersonForm = ({ addPerson, newName, handleNameChange, newNumber, handleNumberChange }) => {
+  return (
+    <>
+    <form onSubmit={addPerson}>
+        <div>
+          name: <input 
+                  value={newName}
+                  onChange={handleNameChange}/>
+        </div>
+        <div>
+          number: <input 
+                  value={newNumber}
+                  onChange={handleNumberChange}/>
+        </div>
+        <div>
+          <button type="submit">add</button>
+        </div>
+
+      </form>
+    </>
+  )
+}
+
+const Persons = ({ query }) => {
+  return (
+    <>
+    {query.map((persons) => {
+        return (
+          <div key={persons.name}>
+            <p>{persons.name} {persons.number}</p>
+            </div>
+        )
+      })}
+    </>
+  )
+}
+
+
+
+
 const App = () => {
   const [persons, setPersons] = useState([
     { name: 'Arto Hellas',
@@ -23,12 +77,13 @@ const App = () => {
     name: 'Nikjel Nikjelson',
     number: '040-2298375'
   }
-  ]) 
+  ])
+  // States
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
 
-
+  // Add new person
   const addPerson = (event) => {
     event.preventDefault()
     const nameObject = {
@@ -74,39 +129,13 @@ const App = () => {
   return (
     <>
       <h2>Phonebook</h2>
-        <div> filter shown with
-          <input
-            value={filter}
-            onChange={handleFilterChange}>
-          </input>
-        </div>
+      <Filter filter={filter} handleFilterChange={handleFilterChange} />
 
-      <h2>add a new</h2>
-      <form onSubmit={addPerson}>
-        <div>
-          name: <input 
-                  value={newName}
-                  onChange={handleNameChange}/>
-        </div>
-        <div>
-          number: <input 
-                  value={newNumber}
-                  onChange={handleNumberChange}/>
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-
-      </form>
+      <h2>Add a new</h2>
+      <PersonForm addPerson={addPerson} newName={newName} handleNameChange={handleNameChange} newNumber={newNumber} handleNumberChange={handleNumberChange}/>
 
       <h2>Numbers</h2>
-      {query.map((persons) => {
-        return (
-          <div key={persons.name}>
-            <p>{persons.name} {persons.number}</p>
-            </div>
-        )
-      })}
+      <Persons query={query}/>
     </>
   )
 }
