@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import axios from 'axios'
 
 
 const Filter = ({ filter , handleFilterChange }) => {
@@ -55,33 +56,23 @@ const Persons = ({ query }) => {
 
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas',
-      number: '040-1231244'
-  },{
-    name: 'Salla Vuorinen',
-    number: '040-8973456'
-  },{
-    name: 'Pekka Haavisto',
-    number: '040-1920437'
-  },{
-    name: 'Makke Mikkelinen',
-    number: '040-9385647'
-  },{
-    name: 'Susse Kievinen',
-    number: '040-3376547'
-  },{
-    name: 'Blum Blumberg',
-    number: '040-9387694'
-  },{
-    name: 'Nikjel Nikjelson',
-    number: '040-2298375'
-  }
-  ])
+  const [persons, setPersons] = useState([])
   // States
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
+
+  useEffect(() => {
+    console.log('effect')
+    axios
+      .get('http://localhost:3001/persons')
+      .then(response => {
+        console.log('promise fulfilled')
+        setPersons(response.data)
+      })
+  }, [])
+
+
 
   // Add new person
   const addPerson = (event) => {
