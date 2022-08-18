@@ -38,13 +38,13 @@ const PersonForm = ({ addPerson, newName, handleNameChange, newNumber, handleNum
   )
 }
 
-const Persons = ({ query }) => {
+const Persons = ({ query, handleDelete}) => {
   return (
     <>
-    {query.map((persons) => {
+    {query.map((person) => {
         return (
-          <div key={persons.name}>
-            <p>{persons.name} {persons.number}</p>
+          <div key={person.id}>
+            <p>{person.name} {person.number} <button onClick={() => handleDelete(person)}>Delete</button></p>
             </div>
         )
       })}
@@ -69,6 +69,29 @@ const App = () => {
         setPersons(initialPersons)
       })
   }, [])
+
+
+  const handleDelete = (person) => {
+    console.log(person)
+    console.log(`delete person ${person.id} ?`)
+    if (window.confirm(`delete ${person.name}?`)) {
+      personService
+      .remove(person.id)
+      window.location.reload(false)
+    } 
+    else {
+      return
+    }
+    
+
+
+    // personService
+    //   .deleteUser()
+    //   .then(res => {
+    //     window.confirm(`Delete ${person.name}?`);
+    //     setPersons(null)
+    //   })
+  }
 
 
 
@@ -135,7 +158,7 @@ const App = () => {
         handleNumberChange={handleNumberChange}/>
 
       <h2>Numbers</h2>
-      <Persons query={query}/>
+      <Persons query={query} handleDelete={handleDelete}/>
     </>
   )
 }
