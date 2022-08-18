@@ -98,10 +98,13 @@ const App = () => {
 
     // if object is not found in array, concat the object to array
     if (!isFound) {
-      setPersons(persons.concat(nameObject))
-      setNewName('')
-      setNewNumber('')
-    }
+      axios
+        .post('http://localhost:3001/persons', nameObject)
+        .then(response => {
+          setPersons(persons.concat(response.data))
+          setNewName('')
+          setNewNumber('')
+        })}
   }
     // Filter phonebook by a string
   const query = persons.filter(name => name.name.toLowerCase().includes(filter))
