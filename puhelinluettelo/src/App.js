@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
 
+import personService from './services/persons'
 
 const Filter = ({ filter , handleFilterChange }) => {
   return (
@@ -63,12 +63,10 @@ const App = () => {
   const [filter, setFilter] = useState('')
 
   useEffect(() => {
-    console.log('effect')
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        console.log('promise fulfilled')
-        setPersons(response.data)
+    personService
+      .getAll()
+      .then(initialPersons => {
+        setPersons(initialPersons)
       })
   }, [])
 
@@ -79,7 +77,8 @@ const App = () => {
     event.preventDefault()
     const nameObject = {
       name: newName,
-      number: newNumber
+      number: newNumber,
+      id: persons.length + 1
     }
     // check to see if object already exists in array
     const isFound = persons.some(object => {
@@ -98,13 +97,13 @@ const App = () => {
 
     // if object is not found in array, concat the object to array
     if (!isFound) {
-      axios
-        .post('http://localhost:3001/persons', nameObject)
-        .then(response => {
-          setPersons(persons.concat(response.data))
-          setNewName('')
-          setNewNumber('')
-        })}
+      personService
+        .create(nameObject)
+          .then(returnedPerson => {
+            setPersons(persons.concat(returnedPerson))
+            setNewName('')
+            setNewNumber('')
+          })}
   }
     // Filter phonebook by a string
   const query = persons.filter(name => name.name.toLowerCase().includes(filter))
@@ -123,10 +122,17 @@ const App = () => {
   return (
     <>
       <h2>Phonebook</h2>
-      <Filter filter={filter} handleFilterChange={handleFilterChange} />
+      <Filter
+        filter={filter}
+        handleFilterChange={handleFilterChange} />
 
       <h2>Add a new</h2>
-      <PersonForm addPerson={addPerson} newName={newName} handleNameChange={handleNameChange} newNumber={newNumber} handleNumberChange={handleNumberChange}/>
+      <PersonForm 
+        addPerson={addPerson}
+        newName={newName}
+        handleNameChange={handleNameChange}
+        newNumber={newNumber}
+        handleNumberChange={handleNumberChange}/>
 
       <h2>Numbers</h2>
       <Persons query={query}/>
