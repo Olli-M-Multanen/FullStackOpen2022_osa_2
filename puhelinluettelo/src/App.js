@@ -1,59 +1,8 @@
 import { useState, useEffect } from 'react'
-
 import personService from './services/persons'
-
-const Filter = ({ filter , handleFilterChange }) => {
-  return (
-    <>
-    <div>filter shown with
-      <input
-        value={filter}
-        onChange={handleFilterChange}>
-      </input>
-    </div>
-    </>
-  )
-}
-
-const PersonForm = ({ addPerson, newName, handleNameChange, newNumber, handleNumberChange }) => {
-  return (
-    <>
-    <form onSubmit={addPerson}>
-        <div>
-          name: <input 
-                  value={newName}
-                  onChange={handleNameChange}/>
-        </div>
-        <div>
-          number: <input 
-                  value={newNumber}
-                  onChange={handleNumberChange}/>
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-
-      </form>
-    </>
-  )
-}
-
-const Persons = ({ query, handleDelete}) => {
-  return (
-    <>
-    {query.map((person) => {
-        return (
-          <div key={person.id}>
-            <p>{person.name} {person.number} <button onClick={() => handleDelete(person)}>Delete</button></p>
-            </div>
-        )
-      })}
-    </>
-  )
-}
-
-
-
+import List from './components/contactList'
+import Add from './components/contactAdd'
+import Filter from './components/contactFilter'
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -69,42 +18,15 @@ const App = () => {
         setPersons(initialPersons)
       })
   }, [])
-
-
-  const handleDelete = (person) => {
-    console.log(person)
-    console.log(`delete person ${person.id} ?`)
-    if (window.confirm(`delete ${person.name}?`)) {
-      personService
-      .remove(person.id)
-      window.location.reload(false)
-    } 
-    else {
-      return
-    }
-    
-
-
-    // personService
-    //   .deleteUser()
-    //   .then(res => {
-    //     window.confirm(`Delete ${person.name}?`);
-    //     setPersons(null)
-    //   })
-  }
-
-
-
   // Add new person
-  const addPerson = (event) => {
+  const addContact = (event) => {
     event.preventDefault()
     const nameObject = {
       name: newName,
       number: newNumber,
-      id: persons.length + 1
     }
     // check to see if object already exists in array
-    const isFound = persons.some(object => {
+  const isFound = persons.some(object => {
       if (object.name === newName) {
         return true
       }
@@ -113,11 +35,10 @@ const App = () => {
     // if object found = true
     // alert
     if (isFound) {
-      alert(`${newName} is already added to phonebook !`)
+      handleContactChange()
       setNewName('')
       setNewNumber('')
     }
-
     // if object is not found in array, concat the object to array
     if (!isFound) {
       personService
@@ -128,7 +49,7 @@ const App = () => {
             setNewNumber('')
           })}
   }
-    // Filter phonebook by a string
+    // Filter contacts by a string
   const query = persons.filter(name => name.name.toLowerCase().includes(filter))
 
   // handleChanges
@@ -141,24 +62,47 @@ const App = () => {
   const handleFilterChange = (event) => {
       setFilter(event.target.value)
   }
-
+  const handleContactChange = () => {
+    persons.some(object => {
+      if (object.name === newName) {
+        console.log(object.id)
+        if (window.confirm(`update ${object.name}'s number to ${newNumber} ?`)) {
+          personService
+          .update(object.id, {
+            name: object.name,
+            number: newNumber,
+            id: object.id
+          })
+          window.location.reload(false)
+        }
+      }
+  })
+}
+  const handleDelete = (contact) => {
+    console.log(contact)
+    console.log(`delete person ${contact.id} ?`)
+    if (window.confirm(`delete ${contact.name}?`)) {
+      personService
+      .remove(contact.id)
+      window.location.reload(false)
+    } 
+  }
   return (
     <>
       <h2>Phonebook</h2>
       <Filter
         filter={filter}
         handleFilterChange={handleFilterChange} />
-
       <h2>Add a new</h2>
-      <PersonForm 
-        addPerson={addPerson}
+      <Add
+        addContact={addContact}
         newName={newName}
         handleNameChange={handleNameChange}
         newNumber={newNumber}
-        handleNumberChange={handleNumberChange}/>
-
+        handleNumberChange={handleNumberChange}
+        handleContactChange={handleContactChange}/>
       <h2>Numbers</h2>
-      <Persons query={query} handleDelete={handleDelete}/>
+      <List query={query} handleDelete={handleDelete}/>
     </>
   )
 }
