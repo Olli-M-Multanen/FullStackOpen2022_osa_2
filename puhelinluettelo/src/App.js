@@ -35,7 +35,8 @@ const App = () => {
     // if object found = true
     // alert
     if (isFound) {
-      handleContactChange()
+      // handleContactChange()
+      handleUpdateContact()
       setNewName('')
       setNewNumber('')
     }
@@ -62,31 +63,33 @@ const App = () => {
   const handleFilterChange = (event) => {
       setFilter(event.target.value)
   }
-  const handleContactChange = () => {
-    persons.some(object => {
-      if (object.name === newName) {
-        console.log(object.id)
-        if (window.confirm(`update ${object.name}'s number to ${newNumber} ?`)) {
-          personService
-          .update(object.id, {
-            name: object.name,
-            number: newNumber,
-            id: object.id
-          })
-          window.location.reload(false)
-        }
+
+  const handleUpdateContact = () => {
+      // find right contact by name
+      const person = persons.find(p => p.name === newName)
+      // variable contains copies all attributes of person, except changes numbers value
+      const updatedPerson = { ...person, number: newNumber }
+      if (window.confirm(`update ${newName}'s number to ${newNumber} ?`)) {
+        personService
+        .update(person.id, updatedPerson)
+        .then(returnedPerson => {
+          setPersons(persons.map(person => person.name !== newName ? person : returnedPerson))
+        })
       }
-  })
-}
+    }
+
   const handleDelete = (contact) => {
     console.log(contact)
     console.log(`delete person ${contact.id} ?`)
     if (window.confirm(`delete ${contact.name}?`)) {
       personService
       .remove(contact.id)
-      window.location.reload(false)
+      .then(reponse => {
+        setPersons(persons.filter(reponse => reponse.id !== contact.id))
+      })
     } 
   }
+
   return (
     <>
       <h2>Phonebook</h2>
@@ -99,8 +102,7 @@ const App = () => {
         newName={newName}
         handleNameChange={handleNameChange}
         newNumber={newNumber}
-        handleNumberChange={handleNumberChange}
-        handleContactChange={handleContactChange}/>
+        handleNumberChange={handleNumberChange}/>
       <h2>Numbers</h2>
       <List query={query} handleDelete={handleDelete}/>
     </>
