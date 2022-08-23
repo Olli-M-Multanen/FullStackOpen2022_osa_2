@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react'
 import personService from './services/persons'
-import List from './components/contactList'
-import Add from './components/contactAdd'
+import Notification from './components/notification'
 import Filter from './components/contactFilter'
+import Add from './components/contactAdd'
+import List from './components/contactList'
+
+
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -10,6 +13,8 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
+  const [errorMessage, setErrorMessage] = useState(null)
+  const [messageClass, setMessageClass] = useState(null)
 
   useEffect(() => {
     personService
@@ -48,6 +53,13 @@ const App = () => {
             setPersons(persons.concat(returnedPerson))
             setNewName('')
             setNewNumber('')
+            setMessageClass("added")
+            setErrorMessage(
+              `${newName}'s number added succesfully !`
+            )
+            setTimeout(() => {
+              setErrorMessage(null)
+            }, 5000)
           })}
   }
     // Filter contacts by a string
@@ -74,6 +86,13 @@ const App = () => {
         .update(person.id, updatedPerson)
         .then(returnedPerson => {
           setPersons(persons.map(person => person.name !== newName ? person : returnedPerson))
+          setMessageClass("update")
+          setErrorMessage(
+            `${newName}'s number updated succesfully !`
+          )
+          setTimeout(() => {
+            setErrorMessage(null)
+          }, 5000)
         })
       }
     }
@@ -86,6 +105,13 @@ const App = () => {
       .remove(contact.id)
       .then(reponse => {
         setPersons(persons.filter(reponse => reponse.id !== contact.id))
+        setMessageClass("delete")
+        setErrorMessage(
+          `${contact.name}'s number deleted succesfully !`
+        )
+        setTimeout(() => {
+          setErrorMessage(null)
+        }, 5000)
       })
     } 
   }
@@ -93,6 +119,7 @@ const App = () => {
   return (
     <>
       <h2>Phonebook</h2>
+      <Notification message={errorMessage} messageClass={messageClass}/>
       <Filter
         filter={filter}
         handleFilterChange={handleFilterChange} />
