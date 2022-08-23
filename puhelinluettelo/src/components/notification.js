@@ -10,7 +10,6 @@ const Notification = ({ message, messageClass}) => {
         margin: '15px auto',
         position: 'relative',
         borderRadius: '5px',
-        borderRadius: '5px',
     }
 
     const notificationUpdateStyle = {
@@ -22,6 +21,16 @@ const Notification = ({ message, messageClass}) => {
         margin: '15px auto',
         position: 'relative',
         borderRadius: '5px',
+    }
+
+    const notificationRemoveStyle = {
+        color: '#9F6000',
+        background: '#FEEFB3',
+        fontStyle: 'bold',
+        fontSize: 20,
+        padding: '10px',
+        margin: '15px auto',
+        position: 'relative',
         borderRadius: '5px',
     }
 
@@ -34,22 +43,25 @@ const Notification = ({ message, messageClass}) => {
         margin: '15px auto',
         position: 'relative',
         borderRadius: '5px',
-        borderRadius: '5px',
     }
-
-
 
     if (message === null) {
         return null
-    } else if (messageClass == "added") {
+    } else if (messageClass === "added") {
         return (
             <div style={notificationAddStyle}>
                 {message}
             </div>
             )
-    } else if (messageClass == 'update') {
+    } else if (messageClass === 'updated') {
         return (
             <div style={notificationUpdateStyle}>
+                {message}
+            </div>
+            )
+    } else if (messageClass === 'removed') {
+        return (
+            <div style={notificationRemoveStyle}>
                 {message}
             </div>
             )

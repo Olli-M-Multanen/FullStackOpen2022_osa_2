@@ -1,7 +1,7 @@
 import React from 'react'
 
 
-const List = ({ query, handleDelete }) => {
+const ContactList = ({ query, handleDelete }) => {
     return (
       <>
       {query.map((contact) => {
@@ -17,4 +17,4 @@ const List = ({ query, handleDelete }) => {
     )
   }
 
-export default List
+export default ContactList

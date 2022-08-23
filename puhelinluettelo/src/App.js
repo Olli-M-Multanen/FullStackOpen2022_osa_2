@@ -3,9 +3,7 @@ import personService from './services/persons'
 import Notification from './components/notification'
 import Filter from './components/contactFilter'
 import Add from './components/contactAdd'
-import List from './components/contactList'
-
-
+import ContactList from './components/contactList'
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -78,18 +76,28 @@ const App = () => {
 
   const handleUpdateContact = () => {
       // find right contact by name
-      const person = persons.find(p => p.name === newName)
+      const contact = persons.find(contact => contact.name === newName)
       // variable contains copies all attributes of person, except changes numbers value
-      const updatedPerson = { ...person, number: newNumber }
+      const updatedPerson = { ...contact, number: newNumber }
       if (window.confirm(`update ${newName}'s number to ${newNumber} ?`)) {
         personService
-        .update(person.id, updatedPerson)
-        .then(returnedPerson => {
-          setPersons(persons.map(person => person.name !== newName ? person : returnedPerson))
-          setMessageClass("update")
+        .update(contact.id, updatedPerson)
+        .then(returnedContact => {
+          setPersons(persons.map(contact => contact.name !== newName ? contact : returnedContact))
+          setMessageClass("updated")
           setErrorMessage(
             `${newName}'s number updated succesfully !`
           )
+          setTimeout(() => {
+            setErrorMessage(null)
+          }, 5000)
+        })
+        .catch(error => {
+          setMessageClass("removed")
+          setErrorMessage(
+            `${newName}'s number has already been removed from server`
+          )
+          setPersons(persons.filter(reponse => reponse.id !== contact.id))
           setTimeout(() => {
             setErrorMessage(null)
           }, 5000)
@@ -98,14 +106,12 @@ const App = () => {
     }
 
   const handleDelete = (contact) => {
-    console.log(contact)
-    console.log(`delete person ${contact.id} ?`)
     if (window.confirm(`delete ${contact.name}?`)) {
       personService
       .remove(contact.id)
       .then(reponse => {
         setPersons(persons.filter(reponse => reponse.id !== contact.id))
-        setMessageClass("delete")
+        setMessageClass("deleted")
         setErrorMessage(
           `${contact.name}'s number deleted succesfully !`
         )
@@ -113,9 +119,18 @@ const App = () => {
           setErrorMessage(null)
         }, 5000)
       })
+      .catch(error => {
+        setMessageClass("removed")
+        setPersons(persons.filter(reponse => reponse.id !== contact.id))
+        setErrorMessage(
+          `${contact.name}'s number has already been removed from server`
+        )
+        setTimeout(() => {
+          setErrorMessage(null)
+        }, 5000)
+      })
     } 
   }
-
   return (
     <>
       <h2>Phonebook</h2>
@@ -131,9 +146,8 @@ const App = () => {
         newNumber={newNumber}
         handleNumberChange={handleNumberChange}/>
       <h2>Numbers</h2>
-      <List query={query} handleDelete={handleDelete}/>
+      <ContactList query={query} handleDelete={handleDelete}/>
     </>
   )
 }
-
 export default App
